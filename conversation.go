@@ -19,3 +19,10 @@ func (c *Client) NewConversation(params MixMap) (*gjson.Result, error) {
 
 	return c.Post(uri, params)
 }
+
+// DelConversation is used to del conversation
+func (c *Client) DelConversation(conversationUuid string) (*gjson.Result, error) {
+	uri := fmt.Sprintf("/api/organizations/%s/chat_conversations/%s", c.opts.Orgid, conversationUuid)
+
+	return c.Delete(uri, nil)
+}
