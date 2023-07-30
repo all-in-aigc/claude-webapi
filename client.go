@@ -116,6 +116,34 @@ func (c *Client) post(uri string, params MixMap) (*http.Response, error) {
 	return c.doRequest(req)
 }
 
+// Delete will request api with delete method
+func (c *Client) Delete(uri string, params MixMap) (*gjson.Result, error) {
+	resp, err := c.delete(uri, params)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %v", err)
+	}
+
+	return c.parseBody(resp)
+}
+func (c *Client) delete(uri string, params MixMap) (*http.Response, error) {
+	data, err := json.Marshal(params)
+	if err != nil {
+		return nil, fmt.Errorf("marshal request body failed: %v", err)
+	}
+
+	if !strings.HasPrefix(uri, "http") {
+		uri = c.opts.BaseUri + uri
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, uri, bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("new request failed: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return c.doRequest(req)
+}
 func (c *Client) doRequest(req *http.Request) (*http.Response, error) {
 	req.Header.Set("Cookie", fmt.Sprintf("sessionKey=%s", c.opts.SessionKey))
 	req.Header.Set("User-Agent", c.opts.UserAgent)
